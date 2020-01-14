@@ -30,7 +30,7 @@ for year in dirs:
     datasets_ts.append(ds)
 
 for i, datasets in enumerate([datasets_tr, datasets_ts]):
-    name = 'training_set.csv'
+    name = 'train.csv' if i == 0 else 'test.csv'
 
     f_ds = pd.concat(datasets, ignore_index=True)
     f_ds.drop(f_ds[f_ds.tweet == 'Not Available'].index, inplace=True)
@@ -44,5 +44,3 @@ for i, datasets in enumerate([datasets_tr, datasets_ts]):
 # SAVE THE FINAL TRAINING DATASET AS A CSV FILE ###############################
 
     f_ds.to_csv(path_or_buf=path_to_ds + name, index=False)
-
-    name = 'test_set.csv'
