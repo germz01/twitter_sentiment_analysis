@@ -12,7 +12,7 @@ def clean_mentions_tags_and_links(tweet):
     return ' '.join(tokens)
 
 
-# BUILD THE FINAL DATASET THAT WILL BE USED FOR TRAINING ######################
+# BUILD THE FINAL DATASET THAT WILL BE USED FOR TRAINING AND TESTING ##########
 
 dirs = [x for x in os.walk('../data/')][0][1]
 
@@ -48,6 +48,6 @@ for i, datasets in enumerate([datasets_tr, datasets_ts]):
 
     f_ds.tweet = f_ds.tweet.apply(clean_mentions_tags_and_links)
 
-# SAVE THE FINAL TRAINING DATASET AS A CSV FILE ###############################
+# SAVE THE FINAL TRAINING AND TESTING DATASETs AS A CSV FILE ##################
 
     f_ds.to_csv(path_or_buf='../data/' + name, index=False)
