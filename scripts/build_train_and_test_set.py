@@ -14,18 +14,25 @@ def clean_mentions_tags_and_links(tweet):
 
 # BUILD THE FINAL DATASET THAT WILL BE USED FOR TRAINING ######################
 
-path_to_ds = '../data/DOWNLOAD/Subtask_A/'
-dirs = [x for x in os.walk(path_to_ds)][0][1]
+dirs = [x for x in os.walk('../data/')][0][1]
 
 datasets_tr, datasets_ts = [], []
 
 for year in dirs:
     name = 'twitter_{}_train_A.txt'.format(year)
-    ds = pd.read_csv(path_to_ds + year + '/' + name, sep='\t',
+    ds = pd.read_csv('../data/' + year + '/' + name, sep='\t',
                      names=['id', 'label', 'tweet'])
     datasets_tr.append(ds)
 
-    ds = pd.read_csv(path_to_ds + year + '/' + name.replace('train', 'test'),
+    try:
+        ds = \
+            pd.read_csv('../data/' + year + '/' + name.replace('train', 'dev'),
+                        sep='\t', names=['id', 'label', 'tweet'])
+        datasets_tr.append(ds)
+    except Exception as e:
+        pass
+
+    ds = pd.read_csv('../data/' + year + '/' + name.replace('train', 'test'),
                      sep='\t', names=['id', 'label', 'tweet'])
     datasets_ts.append(ds)
 
@@ -43,4 +50,4 @@ for i, datasets in enumerate([datasets_tr, datasets_ts]):
 
 # SAVE THE FINAL TRAINING DATASET AS A CSV FILE ###############################
 
-    f_ds.to_csv(path_or_buf=path_to_ds + name, index=False)
+    f_ds.to_csv(path_or_buf='../data/' + name, index=False)
