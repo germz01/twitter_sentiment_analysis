@@ -1,17 +1,6 @@
 import os
 import pandas as pd
 
-
-def clean_mentions_tags_and_links(tweet):
-    tokens = []
-
-    for token in tweet.split():
-        if (token[0] not in ['@', '#']) and ('http' not in token):
-            tokens.append(token)
-
-    return ' '.join(tokens)
-
-
 # BUILD THE FINAL DATASET THAT WILL BE USED FOR TRAINING AND TESTING ##########
 
 dirs = [x for x in os.walk('../data/')][0][1]
@@ -43,10 +32,6 @@ for i, datasets in enumerate([datasets_tr, datasets_ts]):
     f_ds.drop(f_ds[f_ds.tweet == 'Not Available'].index, inplace=True)
     f_ds.drop_duplicates(subset='tweet', inplace=True)
     f_ds.drop(labels='id', axis=1, inplace=True)
-
-# REMOVE TAGS, MENTIONS AND LINKS FROM THE TWEETS #############################
-
-    f_ds.tweet = f_ds.tweet.apply(clean_mentions_tags_and_links)
 
 # SAVE THE FINAL TRAINING AND TESTING DATASETs AS A CSV FILE ##################
 
