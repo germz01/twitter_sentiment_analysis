@@ -9,21 +9,26 @@ datasets_tr, datasets_ts = [], []
 
 for year in dirs:
     name = 'twitter_{}_train_A.txt'.format(year)
-    ds = pd.read_csv('../data/' + year + '/' + name, sep='\t',
+    ds = pd.read_csv('../data/' + year + '/' + name, index_col=False, sep='\t',
                      names=['id', 'label', 'tweet'])
     datasets_tr.append(ds)
 
     try:
         ds = \
             pd.read_csv('../data/' + year + '/' + name.replace('train', 'dev'),
-                        sep='\t', names=['id', 'label', 'tweet'])
+                        index_col=False, sep='\t',
+                        names=['id', 'label', 'tweet'])
         datasets_tr.append(ds)
     except Exception as e:
         pass
 
-    ds = pd.read_csv('../data/' + year + '/' + name.replace('train', 'test'),
-                     sep='\t', names=['id', 'label', 'tweet'])
-    datasets_ts.append(ds)
+    try:
+        ds = pd.read_csv('../data/' + year + '/' +
+                         name.replace('train', 'test'), sep='\t',
+                         index_col=False, names=['id', 'label', 'tweet'])
+        datasets_ts.append(ds)
+    except Exception as e:
+        pass
 
 for i, datasets in enumerate([datasets_tr, datasets_ts]):
     name = 'train.csv' if i == 0 else 'test.csv'
