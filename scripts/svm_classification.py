@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from nltk.corpus import stopwords
@@ -20,6 +21,12 @@ def remove_alpha(tweet):
 trainset = pd.read_csv('../data/train.csv')
 testset = pd.read_csv('../data/test.csv')
 
+X_train = trainset.tweet.values
+y_train = trainset.label.map({'positive': 1, 'negative': 2, 'neutral': 3}).\
+    values
+X_test = testset.tweet.values
+y_test = testset.label.map({'positive': 1, 'negative': 2, 'neutral': 3}).values
+
 tokenizer = TweetTokenizer(strip_handles=True, preserve_case=False,
                            reduce_len=True)
 
@@ -27,39 +34,27 @@ vectorizer = CountVectorizer(preprocessor=remove_alpha,
                              tokenizer=tokenizer.tokenize,
                              stop_words=stopwords.words('english'))
 transformer = TfidfTransformer()
-selectioner = SelectKBest(chi2, k=5000)
+selectioner = SelectKBest(chi2)
 
 learner = LinearSVC()
 
 pipe = Pipeline([('vect', vectorizer), ('trans', transformer),
                 ('select', selectioner), ('svm', learner)])
 
-parameters = {'svm__dual': (True, False),
-              'svm__max_iter': (1000, 2000, 5000)}
+parameters = {'trans__sublinear_tf': (False, True),
+              'select__k': (1000, 2000, 5000),
+              'svm__C': tuple(np.linspace(0.1, 1., 3))}
 
-grid_search = GridSearchCV(pipe, parameters, n_jobs=-1, verbose=1)
-grid_search.fit(trainset.tweet.values, trainset.label.values)
+classifier = GridSearchCV(pipe, parameters, n_jobs=-1, verbose=4,
+                          scoring='f1_macro', cv=3)
+classifier.fit(X_train, y_train)
 
-best_parameters = grid_search.best_estimator_.get_params()
+best_parameters = classifier.best_estimator_.get_params()
 for param_name in sorted(parameters.keys()):
     print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
-# PREPROCESSING ###############################################################
-
-# X_train = vectorizer.fit_transform(trainset.tweet.values)
-# X_test = vectorizer.fit_transform(testset.tweet.values)
-# y_train = trainset.label.map({'positive': 1, 'negative': 2, 'neutral': 3})
-# y_test = testset.label.map({'positive': 1, 'negative': 2, 'neutral': 3})
-
-# X_train = selectioner.fit_transform(X_train, y_train)
-# X_test = selectioner.fit_transform(X_test, y_test)
-
-# X_train = transformer.fit_transform(X_train)
-# X_test = transformer.fit_transform(X_test)
-
 # PREDICTION ##################################################################
 
-# classifier = learner.fit(X_train, y_train)
-# predictions = classifier.predict(X_test)
+predictions = classifier.predict(X_test)
 
-# print(classification_report(y_test, predictions))
+print(classification_report(y_test, predictions))
