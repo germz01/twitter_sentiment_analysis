@@ -1,0 +1,48 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[hmarginratio=1:1,top=20mm,bottom=20mm,columnsep=20pt,left=15mm]{geometry}
+\usepackage{multicol}
+\usepackage[original]{abstract}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{lipsum}
+
+\renewcommand{\abstractnamefont}{\normalfont\bfseries}
+\renewcommand{\abstracttextfont}{\normalfont\small}
+
+\graphicspath{{images/}}
+
+\title{\textbf{Human Language Technlogies \\ Twitter Sentiment Analysis}}
+\author{Gianmarco Ricciarelli \\ \href{mailto:gianmarcoricciarelli@gmail.com}{gianmarcoricciarelli@gmail.com}}
+\date{}
+
+\begin{document}
+    \maketitle
+
+    \begin{abstract}
+        \noindent
+        Nowadays, when delving into the Social Network landscape, a user can choose among different
+        paths, depending on the type of experience he/she is searching. Regardless the type of platform that is
+        chosen by the user, either Facebook, or Instagram or Twitter, the amount of textual data that is
+        produced every day is massive. With this paper, I describe the project I developed for the
+        \textit{Human Language Technologies} class hosted by the University of Pisa's Master's Degree in
+        Computer Science, that is, a prediction-oriented analysis of a dataset composed by more thant $40000$
+        sentiment labeled tweets via a series of algorithms like SVM, CNN and LSTM.
+    \end{abstract}
+
+    \begin{multicols}{2}
+        \section{Corpus Collection} % (fold)
+        \label{sec:corpus_collection}
+            \lipsum[1]
+            \lipsum[1]
+            \lipsum[1]
+        % section corpus_collection (end)
+
+        \section{Corpus Analysis} % (fold)
+        \label{sec:corpus_analysis}
+
+        % section corpus_analysis (end)
+    \end{multicols}
+\end{document}

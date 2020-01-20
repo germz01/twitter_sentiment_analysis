@@ -1,1 +1,9 @@
 .DS_Store
+main.aux
+main.fdb_latexmk
+main.fls
+main.log
+main.out
+main.synctex.gz
+main.xdv
+missfont.log
