@@ -66,5 +66,5 @@ testset.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
 
 print('SAVING')
 
-trainset.to_csv('../data/preprocessed_train.csv')
-testset.to_csv('../data/preprocessed_test.csv')
+trainset.to_csv('../data/preprocessed_train.csv', index=False)
+testset.to_csv('../data/preprocessed_test.csv', index=False)
