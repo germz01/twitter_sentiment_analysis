@@ -5,9 +5,10 @@ import pandas as pd
 import ipdb
 
 from gensim.corpora import Dictionary
-from keras.callbacks.callbacks import EarlyStopping
+from keras.callbacks.callbacks import EarlyStopping, ReduceLROnPlateau, \
+    CSVLogger
 from keras.initializers import Constant
-from keras.layers import Dense, Flatten, Conv1D, MaxPooling1D, Embedding
+from keras.layers import Dense, Conv1D, GlobalMaxPooling1D, Embedding
 from keras.models import Sequential
 from keras.optimizers import RMSprop
 from keras.preprocessing.text import Tokenizer
@@ -20,15 +21,18 @@ from tqdm import tqdm
 trainset = pd.read_csv(
     '../data/preprocessed_train.csv',
     converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
+testset = pd.read_csv(
+    '../data/preprocessed_test.csv',
+    converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
 
 # CHOOSING AND INDEXING WORD VECTORS ##########################################
 
-word_embedding = input('WHICH WORD EMBEDDING[A/G/F]: ')
-assert word_embedding in ['A', 'F', 'G']
+embedding_type = input('WHICH WORD EMBEDDING[A/G/F]: ')
+assert embedding_type in ['A', 'F', 'G']
 
 embeddings_index = None
 
-if word_embedding == 'G':
+if embedding_type == 'G':
     embeddings_index, word_embedding = dict(), 'glove/glove.6B.100d.txt'
 
     with open('../pretrained_word_embeddings/{}'.format(word_embedding)) as f:
@@ -36,7 +40,7 @@ if word_embedding == 'G':
             word, coeff = line.split(maxsplit=1)
             coeff = np.fromstring(coeff, 'f', sep=' ')
             embeddings_index[word] = coeff
-elif word_embedding == 'F':
+elif embedding_type == 'F':
     # TO DO
     embeddings_index = dict()
 else:
@@ -58,7 +62,8 @@ else:
     new_map = {'positive': 0, 'negative': 1, 'neutral': 2}
 
 trainset.label = trainset.label.map(new_map)
-labels = trainset.label.values
+testset.label = testset.label.map(new_map)
+train_labels, test_labels = trainset.label.values, testset.label.values
 labels_index = new_map
 
 word_dict = Dictionary(list(trainset.tweet.values))
@@ -66,11 +71,13 @@ word_dict = Dictionary(list(trainset.tweet.values))
 tokenizer = Tokenizer(num_words=len(word_dict))
 tokenizer.fit_on_texts(trainset.tweet.values)
 
-sequences = tokenizer.texts_to_sequences(trainset.tweet.values)
+X_train = tokenizer.texts_to_sequences(trainset.tweet.values)
+X_test = tokenizer.texts_to_sequences(testset.tweet.values)
+X_train = pad_sequences(X_train, maxlen=100)
+X_test = pad_sequences(X_test, maxlen=100)
 
-X_train = pad_sequences(sequences,
-                        maxlen=max([len(tl) for tl in trainset.tweet]))
-y_train = to_categorical(np.asarray(labels))
+y_train = to_categorical(np.asarray(train_labels))
+y_test = to_categorical(np.asarray(test_labels))
 
 # PREPARATION OF THE EMBEDDING MATRIX #########################################
 
@@ -93,32 +100,40 @@ model = Sequential()
 if embeddings_index is None:
     model.add(Embedding(num_words, 100,
                         embeddings_initializer='glorot_uniform',
-                        input_length=max([len(tl) for tl in trainset.tweet])))
+                        input_length=100))
 else:
     model.add(Embedding(num_words, 100,
                         embeddings_initializer=Constant(embedding_matrix),
-                        input_length=max([len(tl) for tl in trainset.tweet]),
-                        trainable=False))
+                        input_length=100, trainable=False))
 
-model.add(Conv1D(5, 3, strides=1, padding='valid', data_format='channels_last',
-                 activation='relu', use_bias=True,
+model.add(Conv1D(128, 3, strides=1, padding='valid',
+                 data_format='channels_last', activation='relu', use_bias=True,
                  kernel_initializer='glorot_uniform'))
-model.add(MaxPooling1D(pool_size=3, strides=None, padding='valid',
-                       data_format='channels_last'))
-model.add(Flatten())
-model.add(Dense(8, activation='relu'))
-model.add(Dense(16, activation='relu'))
+model.add(GlobalMaxPooling1D())
+model.add(Dense(16, activation='tanh', kernel_initializer='glorot_uniform'))
 model.add(Dense(2 if mapping != 'A' else 3, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(),
+              optimizer=RMSprop(learning_rate=0.01),
               metrics=['acc'])
 
-history = model.fit(X_train, y_train, batch_size=16, epochs=10,
+log_name = '../results/classification_report_cnn_training_{}_{}.csv'.\
+    format(mapping, embedding_type)
+
+history = model.fit(X_train, y_train, batch_size=128, epochs=5,
                     validation_split=0.3,
-                    callbacks=[EarlyStopping(monitor='val_loss', min_delta=0,
-                                             patience=0, mode='min')],
+                    callbacks=[EarlyStopping(), ReduceLROnPlateau(),
+                               CSVLogger(filename=log_name)],
                     shuffle=True)
+
+# EVALUATING THE MODEL ########################################################
+
+log_name = '../results/classification_report_cnn_testing_{}_{}.csv'.\
+    format(mapping, embedding_type)
+
+score = model.evaluate(X_test, y_test, verbose=1)
+
+print('\nScore: {}, Accuracy: {}\n'.format(score[0], score[1]))
 
 # PLOTTING ####################################################################
 
@@ -133,7 +148,7 @@ plt.grid()
 plt.title('Loss per Epoch')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
-plt.savefig('../images/loss.png')
+plt.savefig('../images/cnn_training_loss.png')
 plt.close()
 
 plt.plot(range(len(history.history['acc'])), history.history['acc'],
@@ -147,5 +162,5 @@ plt.grid()
 plt.title('Accuracy per Epoch')
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
-plt.savefig('../images/accuracy.png')
+plt.savefig('../images/cnn_training_accuracy.png')
 plt.close()
