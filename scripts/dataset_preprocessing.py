@@ -21,7 +21,6 @@ def get_wn_pos(token):
 print('IMPORTING')
 
 trainset = pd.read_csv('../data/train.csv')
-testset = pd.read_csv('../data/test.csv')
 
 # TOKENIZATION ################################################################
 
@@ -31,14 +30,12 @@ tokenizer = TweetTokenizer(strip_handles=True, preserve_case=False,
                            reduce_len=True)
 
 trainset.tweet = [tokenizer.tokenize(tweet) for tweet in trainset.tweet]
-testset.tweet = [tokenizer.tokenize(tweet) for tweet in testset.tweet]
 
 # POS TAGGING #################################################################
 
 print('POS TAGGING')
 
 trainset.tweet = [pos_tag(tweet) for tweet in trainset.tweet]
-testset.tweet = [pos_tag(tweet) for tweet in testset.tweet]
 
 # STOP WORD CLEANING AND REDUCTION TO ONLY ALPHANUMERIC TOKENS ################
 
@@ -48,8 +45,6 @@ stopwords = stopwords.words('english')
 
 trainset.tweet = [[token for token in tweet if token[0].isalpha() and
                   token[0] not in stopwords] for tweet in trainset.tweet]
-testset.tweet = [[token for token in tweet if token[0].isalpha() and
-                  token[0] not in stopwords] for tweet in testset.tweet]
 
 # LEMMATIZATION ###############################################################
 
@@ -59,12 +54,9 @@ lemmatizer = WordNetLemmatizer()
 
 trainset.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
                   token in tweet] for tweet in trainset.tweet]
-testset.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
-                  token in tweet] for tweet in testset.tweet]
 
 # SAVING THE PREPROCESSED DATASETS ############################################
 
 print('SAVING')
 
 trainset.to_csv('../data/preprocessed_train.csv', index=False)
-testset.to_csv('../data/preprocessed_test.csv', index=False)

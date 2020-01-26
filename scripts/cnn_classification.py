@@ -2,8 +2,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import ipdb
-
 from gensim.corpora import Dictionary
 from keras.callbacks.callbacks import EarlyStopping, ReduceLROnPlateau, \
     CSVLogger
