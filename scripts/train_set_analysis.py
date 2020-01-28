@@ -1,35 +1,19 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
+import ipdb
+
 from collections import Counter
 from collections import defaultdict
 from nltk.tokenize import TweetTokenizer
 from nltk.corpus import stopwords
 from nltk import pos_tag
+from tqdm import tqdm
+from wordcloud import WordCloud
 
-"""
-VISUALIZZAZIONI: VALORE DI P PER POST POSITIVI VS POST NEGATIVI
-
-                 PAROLE PIU' USATE PER POST NEGATIVI, POSITIVI E NEUTRI
-
-                 WORD CLOUD
-
-"""
-
-
-def clean_tweet_text(tweet):
-    tweet = tokenizer.tokenize(tweet)
-    tweet = [token for token in tweet if token.isalpha()]
-    tweet = [token for token in tweet if token not in stop_words]
-
-    return tweet
-
+# IMPORTING ###################################################################
 
 ds = pd.read_csv('../data/train.csv')
-
-tokenizer = TweetTokenizer(strip_handles=True, preserve_case=False,
-                           reduce_len=True)
-stop_words = stopwords.words('english')
 
 # DISTRIBUTION OF THE WORD FREQUENCIES ########################################
 
@@ -49,9 +33,21 @@ plt.title('Distribution of the word frequencies')
 plt.savefig('../images/word_frequencies.png')
 plt.close()
 
-# TEXT CLEANING ###############################################################
+# CLEANING ####################################################################
 
-ds.tweet = ds.tweet.apply(clean_tweet_text)
+tokenizer = TweetTokenizer(strip_handles=True, preserve_case=False,
+                           reduce_len=True)
+stop_words = stopwords.words('english')
+
+ds.tweet = [tokenizer.tokenize(tweet) for tweet in
+            tqdm(ds.tweet, desc='TOKENIZATION')]
+print()
+ds.tweet = [pos_tag(tokens) for tokens in
+            tqdm(ds.tweet, desc='POS TAGGING')]
+print()
+ds.tweet = [[token for token in tokens if token[0].isalpha() and
+             token[0] not in stop_words] for tokens in
+            tqdm(ds.tweet, desc='CLEANING')]
 
 # TAG DISTRIBUTION FOR POSITIVE TWEETS VS NEGATIVE TWEETS #####################
 
@@ -59,12 +55,12 @@ samples = dict()
 tags_counter = defaultdict(list)
 
 for label in ['positive', 'negative']:
-    samples[label] = ds[ds.label == label].sample(1000, random_state=42)
-    samples[label]['tags'] = [pos_tag(t) for t in samples[label].tweet]
+    samples[label] = ds[ds.label == label].sample(5000, random_state=42)
 
-    for tags in samples[label].tags:
-        for tag in tags:
-            tags_counter[label].append(tag[1])
+    for tokens in samples[label].tweet:
+        for token in tokens:
+            if token[1] not in ['$', "''"]:
+                tags_counter[label].append(token[1])
 
 tags_counter = {'positive': Counter(tags_counter['positive']),
                 'negative': Counter(tags_counter['negative'])}
@@ -106,17 +102,16 @@ tags_counter = defaultdict(list)
 
 for label in ['objective', 'subjective']:
     if label == 'objective':
-        samples[label] = ds[ds.label == 'neutral'].sample(1000,
+        samples[label] = ds[ds.label == 'neutral'].sample(5000,
                                                           random_state=42)
     else:
-        samples[label] = ds[ds.label != 'neutral'].sample(1000,
+        samples[label] = ds[ds.label != 'neutral'].sample(5000,
                                                           random_state=42)
 
-    samples[label]['tags'] = [pos_tag(t) for t in samples[label].tweet]
-
-    for tags in samples[label].tags:
-        for tag in tags:
-            tags_counter[label].append(tag[1])
+    for tokens in samples[label].tweet:
+        for token in tokens:
+            if token[1] not in ['$', "''"]:
+                tags_counter[label].append(token[1])
 
 tags_counter = {'objective': Counter(tags_counter['objective']),
                 'subjective': Counter(tags_counter['subjective'])}
@@ -150,3 +145,36 @@ plt.ylabel('Polarity')
 plt.title('Tag distribution: objective tweets VS subjective tweets')
 plt.savefig('../images/tag_distribution_objective_vs_subjective.png')
 plt.close()
+
+# WORDCLOUD ###################################################################
+
+ds = pd.read_csv(
+    '../data/preprocessed_train.csv',
+    converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
+
+texts_dict = dict()
+
+for label in ['positive', 'negative']:
+    tweets = ds[ds.label == label].tweet.tolist()
+    tot_lst = list()
+
+    for l in tweets:
+        tot_lst += l
+
+    texts_dict[label] = tot_lst
+
+texts_sets = {'positive': set(texts_dict['positive']),
+              'negative': set(texts_dict['negative'])}
+intersection = texts_sets['positive'].intersection(texts_sets['negative'])
+
+for label in ['positive', 'negative']:
+    wordcloud = WordCloud(
+        stopwords=stop_words, background_color="white",
+        colormap='Greens' if label == 'positive' else 'Reds').\
+        generate(' '.join([word for word in texts_dict[label]
+                          if word not in intersection]))
+
+    plt.imshow(wordcloud, interpolation='bilinear')
+    plt.axis("off")
+    plt.savefig('../images/{}_tokens_wordcloud.png'.format(label))
+    plt.close()

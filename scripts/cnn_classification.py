@@ -12,6 +12,7 @@ from keras.optimizers import RMSprop
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
+from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
 # IMPORTING ###################################################################
@@ -19,9 +20,8 @@ from tqdm import tqdm
 trainset = pd.read_csv(
     '../data/preprocessed_train.csv',
     converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
-testset = pd.read_csv(
-    '../data/preprocessed_test.csv',
-    converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
+
+trainset, testset = train_test_split(trainset, test_size=0.2)
 
 # CHOOSING AND INDEXING WORD VECTORS ##########################################
 
