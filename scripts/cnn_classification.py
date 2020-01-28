@@ -2,6 +2,7 @@ import codecs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import warnings
 
 from gensim.corpora import Dictionary
 from keras.callbacks.callbacks import EarlyStopping, ReduceLROnPlateau, \
@@ -15,6 +16,8 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
+
+warnings.filterwarnings("ignore")
 
 # IMPORTING ###################################################################
 
@@ -149,6 +152,10 @@ log_name = '../results/classification_report_cnn_testing_{}_{}.csv'.\
 score = model.evaluate(X_test, y_test, verbose=1)
 
 print('\nScore: {}, Accuracy: {}\n'.format(score[0], score[1]))
+
+pd.DataFrame(np.array([score]), columns=['Score', 'Accuracy']).\
+    to_csv('../results/classification_report_cnn_testing_{}_{}.csv'.
+           format(mapping, embedding_type), index=False)
 
 # PLOTTING ####################################################################
 
