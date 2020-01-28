@@ -1,3 +1,4 @@
+import codecs
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -28,19 +29,25 @@ trainset, testset = train_test_split(trainset, test_size=0.2)
 embedding_type = input('WHICH WORD EMBEDDING[A/G/F]: ')
 assert embedding_type in ['A', 'F', 'G']
 
-embeddings_index = None
+embeddings_index, e_path = None, '../pretrained_word_embeddings/'
 
 if embedding_type == 'G':
     embeddings_index, word_embedding = dict(), 'glove/glove.6B.100d.txt'
 
-    with open('../pretrained_word_embeddings/{}'.format(word_embedding)) as f:
+    with open(e_path + word_embedding) as f:
         for line in tqdm(f, desc='INDEXING WORD VECTORS', total=400000):
             word, coeff = line.split(maxsplit=1)
             coeff = np.fromstring(coeff, 'f', sep=' ')
             embeddings_index[word] = coeff
 elif embedding_type == 'F':
-    # TO DO
-    embeddings_index = dict()
+    embeddings_index, word_embedding = dict(), 'fasttext/wiki-news-300d-1M.vec'
+
+    with codecs.open(e_path + word_embedding) as f:
+        for line in tqdm(f, desc='INDEXING WORD VECTORS', total=999995):
+            values = line.rstrip().rsplit(' ')
+            word = values[0]
+            coeff = np.asarray(values[1:], dtype='float32')
+            embeddings_index[word] = coeff
 else:
     pass
 
@@ -56,6 +63,7 @@ if mapping == 'SO':
 elif mapping == 'PN':
     new_map = {'positive': 0, 'negative': 1}
     trainset = trainset[trainset.label != 'neutral']
+    testset = testset[testset.label != 'neutral']
 else:
     new_map = {'positive': 0, 'negative': 1, 'neutral': 2}
 
@@ -64,15 +72,22 @@ testset.label = testset.label.map(new_map)
 train_labels, test_labels = trainset.label.values, testset.label.values
 labels_index = new_map
 
-word_dict = Dictionary(list(trainset.tweet.values))
+word_dict = Dictionary(list(np.concatenate((trainset.tweet.values,
+                                            testset.tweet.values))))
 
 tokenizer = Tokenizer(num_words=len(word_dict))
-tokenizer.fit_on_texts(trainset.tweet.values)
+tokenizer.fit_on_texts(list(np.concatenate((trainset.tweet.values,
+                                           testset.tweet.values))))
 
 X_train = tokenizer.texts_to_sequences(trainset.tweet.values)
 X_test = tokenizer.texts_to_sequences(testset.tweet.values)
-X_train = pad_sequences(X_train, maxlen=100)
-X_test = pad_sequences(X_test, maxlen=100)
+
+max_token_list_len = max([len(token_list) for token_list in
+                         np.concatenate((trainset.tweet.values,
+                                         testset.tweet.values))])
+
+X_train = pad_sequences(X_train, maxlen=max_token_list_len)
+X_test = pad_sequences(X_test, maxlen=max_token_list_len)
 
 y_train = to_categorical(np.asarray(train_labels))
 y_test = to_categorical(np.asarray(test_labels))
@@ -81,7 +96,7 @@ y_test = to_categorical(np.asarray(test_labels))
 
 num_words = len(word_dict) + 1
 embedding_matrix = None if embeddings_index is None else \
-    np.zeros((num_words, 100))
+    np.zeros((num_words, 100 if embedding_type == 'G' else 300))
 
 if embeddings_index is not None:
     for i, word in tqdm(tokenizer.index_word.items(),
@@ -98,11 +113,11 @@ model = Sequential()
 if embeddings_index is None:
     model.add(Embedding(num_words, 100,
                         embeddings_initializer='glorot_uniform',
-                        input_length=100))
+                        input_length=max_token_list_len))
 else:
-    model.add(Embedding(num_words, 100,
+    model.add(Embedding(num_words, 100 if embedding_type == 'G' else 300,
                         embeddings_initializer=Constant(embedding_matrix),
-                        input_length=100, trainable=False))
+                        input_length=max_token_list_len, trainable=False))
 
 model.add(Conv1D(128, 3, strides=1, padding='valid',
                  data_format='channels_last', activation='relu', use_bias=True,
@@ -126,6 +141,8 @@ history = model.fit(X_train, y_train, batch_size=128, epochs=5,
 
 # EVALUATING THE MODEL ########################################################
 
+print()
+
 log_name = '../results/classification_report_cnn_testing_{}_{}.csv'.\
     format(mapping, embedding_type)
 
@@ -146,7 +163,8 @@ plt.grid()
 plt.title('Loss per Epoch')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
-plt.savefig('../images/cnn_training_loss.png')
+plt.savefig('../images/cnn_training_{}_{}_loss.png'.format(mapping,
+                                                           embedding_type))
 plt.close()
 
 plt.plot(range(len(history.history['acc'])), history.history['acc'],
@@ -160,5 +178,6 @@ plt.grid()
 plt.title('Accuracy per Epoch')
 plt.xlabel('Epoch')
 plt.ylabel('Accuracy')
-plt.savefig('../images/cnn_training_accuracy.png')
+plt.savefig('../images/cnn_training_{}_{}_accuracy.png'.format(mapping,
+                                                               embedding_type))
 plt.close()
