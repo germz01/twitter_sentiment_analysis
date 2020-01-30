@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-import ipdb
-
 from collections import Counter
 from collections import defaultdict
 from nltk.tokenize import TweetTokenizer
@@ -30,7 +28,7 @@ plt.yscale('log')
 plt.xlabel('Words')
 plt.ylabel('Frequencies')
 plt.title('Distribution of the word frequencies')
-plt.savefig('../images/word_frequencies.png')
+plt.savefig('../images/word_frequencies.pdf', bbox_inches='tight')
 plt.close()
 
 # CLEANING ####################################################################
@@ -92,7 +90,8 @@ plt.xticks([])
 plt.xlabel('Tags')
 plt.ylabel('Polarity')
 plt.title('Tag distribution: positive tweets VS negative tweets')
-plt.savefig('../images/tag_distribution_positive_vs_negative.png')
+plt.savefig('../images/tag_distribution_positive_vs_negative.pdf',
+            bbox_inches='tight')
 plt.close()
 
 # TAG DISTRIBUTION FOR OBJECTIVE TWEETS VS SUBJECTIVE TWEETS ##################
@@ -143,7 +142,8 @@ plt.xticks([])
 plt.xlabel('Tags')
 plt.ylabel('Polarity')
 plt.title('Tag distribution: objective tweets VS subjective tweets')
-plt.savefig('../images/tag_distribution_objective_vs_subjective.png')
+plt.savefig('../images/tag_distribution_objective_vs_subjective.pdf',
+            bbox_inches='tight')
 plt.close()
 
 # WORDCLOUD ###################################################################
@@ -176,5 +176,6 @@ for label in ['positive', 'negative']:
 
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.savefig('../images/{}_tokens_wordcloud.png'.format(label))
+    plt.savefig('../images/{}_tokens_wordcloud.pdf'.format(label),
+                bbox_inches='tight')
     plt.close()

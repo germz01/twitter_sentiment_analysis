@@ -72,7 +72,7 @@ model = Sequential()
 model.add(Embedding(num_words, 100, embeddings_initializer='glorot_uniform',
                     input_length=max_token_list_len))
 # model.add(SpatialDropout1D(0.4))
-model.add(LSTM(8, dropout=0.2, recurrent_dropout=0.2))
+model.add(LSTM(8        , dropout=0.2, recurrent_dropout=0.2))
 model.add(Dense(2 if mapping != 'A' else 3, activation='softmax'))
 
 model.compile(loss='categorical_crossentropy', optimizer='adam',
@@ -99,5 +99,5 @@ score = model.evaluate(X_test, y_test, verbose=1)
 print('\nScore: {}, Accuracy: {}\n'.format(score[0], score[1]))
 
 pd.DataFrame(np.array([score]), columns=['Score', 'Accuracy']).\
-    to_csv('../results/classification_report_cnn_testing_{}.csv'.
+    to_csv('../results/classification_report_lstm_testing_{}.csv'.
            format(mapping), index=False)
