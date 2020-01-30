@@ -165,7 +165,52 @@
     \label{sec:classification}
         The Human Language Technologies research's field is very popular at the moment, and, in particular, the
         Sentiment Analysis branch has a rich literature and many tools and resoruces availables for learning.
-        Following the results obtained with the analysis reported in Section \ref{sec:corpus_analysis} I have
+        Having analysed the obtained corpus, as described in Section \ref{sec:corpus_collection} and Section
+        \ref{sec:corpus_analysis}, the next step for my research was to implement a Classification procedure,
+        in which I decided to apply some popular Machine Learning algorithms like Support Vector Machines,
+        Naïve Bayes, Convolutional Neural Networks and Long Short-term Memory Recurrent Neural Networks, as
+        described in \cite{semeval_2014,state_of_the_art,semeval_2016,esuli,attardi}. Being the corpus composed
+        of documents labeled with three distinct labels, that is, positive, negative and neutral, I decided to
+        direct the Classification phase towards the takling of three different tasks:
+
+        \begin{itemize}
+            \item Classification of positive tweets vs negative tweets vs neutral tweets;
+            \item Classification of positive tweets vs negative tweets;
+            \item Classification of subjective tweets vs objective tweets;
+        \end{itemize}
+
+        \noindent
+        As we might expect, for the first and third tasks the entire corpus was used, while for the second one
+        I removed from the corpus all the documents labeled as neutral. As in a typical Machine Learning
+        procedure, the documents composing the corpus cannot be fed directly to the algorithms, since they are
+        texts, and not numbers, so, before applying the algorithms, I developed a preprocessing routine, in
+        which I developed the conversion from texts understandable by humans to texts understandable by
+        machines. After preprocessing the corpus I validated each one of the learners via the application of
+        well-known validation techniques like Cross Validation and Random Grid Search. Finally, for each one
+        of the three tasks, I collected and compared the results provided by the application of the
+        various learning algorithms.
+
+        \subsection{Preprocessing Routine} % (fold)
+        \label{sub:preprocessing_routine}
+            As I said before, there are plenty of resources for learning about Human Language Technologies, and,
+            in general, Sentiment Analysis. After reading about the subject, I developed a Preprocessing
+            Routine that is composed by the following steps:
+
+            \begin{enumerate}
+                \item Tokenization: the original documents are splitted into tokens via a tokenizer that is
+                specifically trained to work on tweets;
+                \item Part Of Speech Tagging: each token list is tagged via the application of a POS tagger;
+                \item Cleaning: for each token list, the token that are not alphanumeric and that contains
+                stop words are removed;
+                \item Lemmatization: each one of the token that came out of the Cleaning phase is transformed
+                in its original lemma;
+            \end{enumerate}
+
+            \noindent
+            As an example, if we apply the Preprocessing Routine to the document
+            \texttt{April has to live. Sharknado wouldn't be the same without her tiny chainsaw. \#aprillives},
+            we obtain the token list \texttt{['april', 'live', 'sharknado', 'without', 'tiny', 'chainsaw']}.
+        % subsection preprocessing_routine (end)
     % section classification (end)
 
     \begin{thebibliography}{4}
