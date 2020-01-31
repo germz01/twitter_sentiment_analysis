@@ -8,11 +8,12 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
 from sklearn.metrics import classification_report
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
+from scipy.stats import randint, uniform
 
 
 def remove_alpha(tweet):
@@ -63,15 +64,15 @@ pipe = Pipeline([('vect', vectorizer), ('trans', transformer),
 
 parameters = {'vect__ngram_range': ((1, 1), (1, 2)),
               'trans__sublinear_tf': (False, True),
-              'select__k': (1000, 2000, 5000)}
+              'select__k': randint(1000, 5000)}
 
 if l_type == 'SVM':
-    parameters['svm__C'] = tuple(np.linspace(0.1, 1., 3))
+    parameters['svm__C'] = uniform()
 else:
-    parameters['nb__alpha'] = tuple(np.linspace(0.1, 1., 3))
+    parameters['nb__alpha'] = uniform()
 
-classifier = GridSearchCV(pipe, parameters, n_jobs=-1, verbose=3,
-                          scoring='f1_macro', cv=3)
+classifier = RandomizedSearchCV(pipe, parameters, n_iter=20, n_jobs=-1,
+                                verbose=3, scoring='f1_macro', cv=3)
 classifier.fit(X_train.values, y_train.values)
 
 # PREDICTION ##################################################################

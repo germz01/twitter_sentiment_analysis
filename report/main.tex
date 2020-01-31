@@ -174,8 +174,8 @@
         direct the Classification phase towards the takling of three different tasks:
 
         \begin{itemize}
-            \item Classification of positive tweets vs negative tweets vs neutral tweets;
             \item Classification of positive tweets vs negative tweets;
+            \item Classification of positive tweets vs negative tweets vs neutral tweets;
             \item Classification of subjective tweets vs objective tweets;
         \end{itemize}
 
@@ -207,13 +207,39 @@
             \end{enumerate}
 
             \noindent
-            As an example, if we apply the Preprocessing Routine to the document
+            As an example, if we apply the Preprocessing Routine to the document:\\
+
+            \noindent
             \texttt{April has to live. Sharknado wouldn't be the same without her tiny chainsaw. \#aprillives},
-            we obtain the token list \texttt{['april', 'live', 'sharknado', 'without', 'tiny', 'chainsaw']}.
+            \\
+
+            \noindent
+            we obtain the token list: \\
+
+            \noindent
+            \texttt{['april', 'live', 'sharknado', 'without', 'tiny', 'chainsaw']}.
         % subsection preprocessing_routine (end)
+
+        \subsection{Validation Routine} % (fold)
+        \label{sub:validation_routine}
+            Every Machine Learning algorithm is characterized by a number of parameters, that is, the
+            so-called hyperparameters, that the user can modify accordingly to the type of task he/she is
+            takling. Being the task of tuning every single hyperparameter a cumbersome one, I decided to
+            apply the well-know Random Grid Search technique, as described in \cite{random_grid_search}, in
+            order to discover the most effective combination of hyperparameters for the models I want to
+            compare. I used the $80\%$ of the corpus as a training set, while the remaining $20\%$ was used as
+            testing set. Moreover, since the training/validation set extracted from the corpus
+            presents a reasonable amount of examples, for each "point" produced by the Random Grid Search, I
+            applied the K-Fold Cross Validation technique, setting the value for the K parameter to $3$.
+        % subsection validation_routine (end)
+
+        \subsection{Positive vs Negative Classification} % (fold)
+        \label{sub:positive_vs_negative_classification}
+
+        % subsection positive_vs_negative_classification (end)
     % section classification (end)
 
-    \begin{thebibliography}{4}
+    \begin{thebibliography}{7}
         \bibitem{twitter_as_a_corpus}
         Pak, Alexander \& Paroubek, Patrick. (2010). Twitter as a Corpus for Sentiment Analysis and Opinion
         Mining. Proceedings of LREC. 10.
@@ -242,5 +268,10 @@
         \bibitem{attardi}
         Attardi, Giuseppe \& Sartiano, Daniele. (2016). UniPI at SemEval-2016 Task 4: Convolutional Neural
         Networks for Sentiment Classification. 220-224. 10.18653/v1/S16-1033.
+
+        \bibitem{random_grid_search}
+        James Bergstra and Yoshua Bengio. 2012. Random search for hyper-parameter optimization. J. Mach. Learn.
+        Res. 13, 1 (February 2012), 281–305.
+
     \end{thebibliography}
 \end{document}
