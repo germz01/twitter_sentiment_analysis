@@ -1,8 +1,8 @@
-import numpy as np
 import pandas as pd
 
 from nltk.corpus import stopwords
 from nltk.tokenize import TweetTokenizer
+from scipy.stats import randint, uniform
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_selection import SelectKBest
@@ -13,7 +13,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-from scipy.stats import randint, uniform
 
 
 def remove_alpha(tweet):
