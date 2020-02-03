@@ -52,9 +52,14 @@ def model_cnn(learning_rate=0.01):
 def model_lstm(learning_rate=0.01, dropout=0.2, recurrent_dropout=0.2):
     model = Sequential()
 
-    model.add(Embedding(num_words, 100,
-                        embeddings_initializer='glorot_uniform',
-                        input_length=max_token_list_len))
+    if embeddings_index is None:
+        model.add(Embedding(num_words, 100,
+                            embeddings_initializer='glorot_uniform',
+                            input_length=max_token_list_len))
+    else:
+        model.add(Embedding(num_words, 100 if embedding_type == 'G' else 300,
+                            embeddings_initializer=Constant(embedding_matrix),
+                            input_length=max_token_list_len, trainable=False))
     model.add(LSTM(8, dropout=dropout,
                    recurrent_dropout=recurrent_dropout))
     model.add(Dense(2 if mapping != 'A' else 3, activation='softmax'))
@@ -169,14 +174,21 @@ parameters = {'learning_rate': uniform(loc=0.001, scale=0.009),
 if m_type == 'LSTM':
     parameters['dropout'] = uniform(loc=0.2, scale=0.3)
     parameters['recurrent_dropout'] = uniform(loc=0.2, scale=0.3)
+    parameters['batch_size'] = [32]
+
+n_iter = int(input('NUMBER OF POINTS TO TEST: '))
 
 classifier = RandomizedSearchCV(model, parameters, n_jobs=1, verbose=3, cv=3,
-                                refit=False, n_iter=5)
+                                refit=False, n_iter=n_iter)
 classifier.fit(X_train, y_train)
 
 best_parameters = classifier.best_params_
 
-model = model_cnn(learning_rate=best_parameters['learning_rate'])
+model = model_cnn(learning_rate=best_parameters['learning_rate']) \
+    if m_type == 'CNN' \
+    else model_lstm(learning_rate=best_parameters['learning_rate'],
+                    dropout=best_parameters['dropout'],
+                    recurrent_dropout=best_parameters['recurrent_dropout'])
 
 history = model.fit(X_train, y_train, epochs=5,
                     validation_split=0.3, shuffle=True,
