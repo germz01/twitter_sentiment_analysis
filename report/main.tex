@@ -5,7 +5,7 @@
 \usepackage[hmarginratio=1:1,top=20mm,bottom=20mm,columnsep=20pt,left=15mm]{geometry}
 \usepackage[original]{abstract}
 \usepackage{graphicx,hyperref,lipsum}
-\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption}
+\usepackage[hang, small,labelfont=bf,up]{caption}
 \usepackage{float,wrapfig,subcaption,booktabs,lettrine,enumitem,amsmath}
 
 \renewcommand{\abstractnamefont}{\normalfont\bfseries}
@@ -14,7 +14,8 @@
 \graphicspath{ {./../images/} }
 
 \title{\textbf{Human Language Technlogies \\ Twitter Sentiment Analysis}}
-\author{Gianmarco Ricciarelli \\ \href{mailto:gianmarcoricciarelli@gmail.com}{gianmarcoricciarelli@gmail.com}}
+\author{Gianmarco Ricciarelli \\ \href{mailto:gianmarcoricciarelli@gmail.com}{gianmarcoricciarelli@gmail.com}\\
+Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysis}{GitHub}}
 \date{}
 
 \begin{document}
@@ -180,14 +181,14 @@
         \end{itemize}
 
         \noindent
-        As we might expect, for the first and third tasks the entire corpus was used, while for the second one
+        As we might expect, for the second and third tasks the entire corpus was used, while for the first one
         I removed from the corpus all the documents labeled as neutral. As in a typical Machine Learning
         procedure, the documents composing the corpus cannot be fed directly to the algorithms, since they are
         texts, and not numbers, so, before applying the algorithms, I developed a preprocessing routine, in
         which I developed the conversion from texts understandable by humans to texts understandable by
         machines. After preprocessing the corpus I validated each one of the learners via the application of
-        well-known validation techniques like Cross Validation and Random Grid Search. Finally, for each one
-        of the three tasks, I collected and compared the results provided by the application of the
+        well-known validation techniques like K-Fold Cross Validation and Random Grid Search. Finally, for each
+        one of the three tasks, I collected and compared the results provided by the application of the
         various learning algorithms.
 
         \subsection{Preprocessing Routine} % (fold)
@@ -234,6 +235,11 @@
         % subsection validation_routine (end)
 
         \subsection{Positive vs Negative Classification} % (fold)
+            As we might think, this is the easier one among the tasks I have decided to approach. This is
+            because the original multilabel classification problem is downgraded to a binary classification
+            problem, and, moreover, by removing the documents labeled as neutral we obtain a corpus where
+            the positive labeled tweets are very well separated from the negative ones, hence resulting in
+            a easier classification from the Machine Learning point of view.
         \label{sub:positive_vs_negative_classification}
 
         % subsection positive_vs_negative_classification (end)

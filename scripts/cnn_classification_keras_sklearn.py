@@ -165,7 +165,7 @@ model = KerasClassifier(build_fn=model_cnn if m_type == 'CNN' else model_lstm,
                         verbose=1, epochs=3)
 
 parameters = {'learning_rate': uniform(loc=0.001, scale=0.009),
-              'batch_size': randint(8, 32)}
+              'batch_size': randint(8, 33)}
 if m_type == 'LSTM':
     parameters['dropout'] = uniform(loc=0.2, scale=0.3)
     parameters['recurrent_dropout'] = uniform(loc=0.2, scale=0.3)
