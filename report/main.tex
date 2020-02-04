@@ -342,13 +342,78 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
 
         \subsection{Subjective vs Objective Classification} % (fold)
         \label{sub:subjective_vs_objective_classification}
+            Finally I discuss the last of the tasks that I takled for my project, that is, the
+            classification of subjective and objective tweets. As for the problem described in Section
+            \ref{sub:positive_vs_negative_vs_neutral_classification}, also for this type of
+            classification the entire corpus was used. For the tasks described in Sections
+            \ref{sub:positive_vs_negative_classification} and
+            \ref{sub:positive_vs_negative_vs_neutral_classification} the labels were substituted with
+            positive integers from $0$ to $1$ for the positive-vs-negative classification, and from $0$ to
+            $2$ for the positive-vs-negative-vs-neutral classification. For this type of classification I
+            labeled all the positive and negative documents, that is, the subjective ones, with the integer
+            $0$, while the neutral ones, that is, the objective ones, were labeled with the integer $1$.
+            As for the task described in Section \ref{sub:positive_vs_negative_vs_neutral_classification},
+            also for this task the request in terms of time and computational resources was high.
 
+            \begin{table}[h]
+                \centering
+                \begin{tabular}{| c | c |}
+                    \hline
+                    \textbf{Classifier} & \textbf{Accuracy} \\
+                    \hline
+                    $SVM$ & $0.67$ \\
+                    \hline
+                    $NB$ & $0.64$ \\
+                    \hline
+                    $CNN_A$ & $0.64$ \\
+                    \hline
+                    $CNN_G$ & $0.64$ \\
+                    \hline
+                    $CNN_F$ & $0.66$ \\
+                    \hline
+                    $LSTM_A$ & $0.68$ \\
+                    \hline
+                    $LSTM_G$ & $0.66$ \\
+                    \hline
+                    $LSTM_F$ & $0.68$ \\
+                    \hline
+                \end{tabular}
+                \caption{Models' comparison for the subjective-vs-objective classification task.}
+                \label{tab:so_comparison}
+            \end{table}
+
+            \noindent
+            In Table \ref{tab:so_comparison} we can see the results in terms of Accuracy for the application
+            of the models to the entire corpus composed by subjective and objective tweets. By observing the
+            Table we can notice that, despite the fact that also for this task the entire corpus was used,
+            the average Accuracy is greater than the one obtained for the task described in Section
+            \ref{sub:positive_vs_negative_vs_neutral_classification}. This is due to the fact that this
+            type of task is a binary classification task, and not a multilabel classification one, in which
+            each one of the two labels is well represented, as we can see in Section
+            \ref{sec:corpus_analysis}. We can see that the best models are both LSTMs, one using the
+            fastText pre-trained word vectors and the other using a word embedding learned during the
+            training phase, followed closely by the SVM model.
         % subsection subjective_vs_objective_classification (end)
     % section classification (end)
 
     \section{Conclusions} % (fold)
     \label{sec:conclusions}
-
+        The Sentiment Analysis research field is very active at the moment, with a great number of paper
+        available and many tools and resources that can be used for learning and enriching our knowledge
+        about
+        the subject. The possibility to freely access great and constantly updated amount of data, like, for
+        example, Twitter's tweets, Facebook's posts, screenplays, etc. etc., makes it easy to experiment
+        with the available models or even to create new ones in order to obtain better performances in
+        comparison with the old ones. With this project I learned about how to obtain a good amount of
+        documents from a reliable source, which in this case is represented by the
+        \textit{International Workshop on Semantic Evaluation}, how to analyze textual data in order to
+        discover hidden relationships between the documents composing a corpus, and, most importantly, I
+        learned how to use well-know models like Support Vector Machines, Naïve Bayes, Convolutional Neural
+        Networks and Long Short-term Memory Recurrent Neural Networks in order to classify the sentiment
+        behind a document written by an human user, which nowadays can be an useful resource to be used
+        in a variety of application's fields. I think that the performances I obtained in term of Accuracy
+        score, especially the CNN and LSTM ones, might be upgraded via the use of different architectures,
+        but, as I said before, for my project I preferred a simpler approach.
     % section conclusions (end)
 
     \begin{thebibliography}{9}
