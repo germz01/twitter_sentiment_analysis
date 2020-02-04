@@ -4,4 +4,4 @@ Nowadays, when delving into the Social Network landscape, a user can choose amon
 Human Language Technologies class hosted by the University of Pisa's Master's 
 Degree in Computer Science, that is, a prediction-oriented analysis of a 
 dataset composed by more thant 40000 sentiment labeled tweets via a series of 
-algorithms like SVM, CNN and LSTM.
+algorithms like SVM, NB, CNN and LSTM.
