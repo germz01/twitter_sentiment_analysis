@@ -161,39 +161,58 @@ if embeddings_index is not None:
         if embedding_vector is not None:
             embedding_matrix[i] = embedding_vector
 
-# TRAINING AND VALIDATING THE MODEL ###########################################
+# TRAINING/VALIDATING THE MODEL ###########################################
 
 m_type = input('WHICH MODEL[CNN/LSTM]: ')
 assert m_type in ['CNN', 'LSTM']
 
-model = KerasClassifier(build_fn=model_cnn if m_type == 'CNN' else model_lstm,
-                        verbose=1, epochs=3)
+validation = input('VALIDATION[Y/N]? ')
+assert validation in ['Y', 'N']
 
-parameters = {'learning_rate': uniform(loc=0.001, scale=0.009),
-              'batch_size': randint(8, 33)}
-if m_type == 'LSTM':
-    parameters['dropout'] = uniform(loc=0.2, scale=0.3)
-    parameters['recurrent_dropout'] = uniform(loc=0.2, scale=0.3)
-    parameters['batch_size'] = [32]
+model = None
 
-n_iter = int(input('NUMBER OF POINTS TO TEST: '))
+if validation == 'Y':
+    model = KerasClassifier(build_fn=model_cnn if m_type == 'CNN'
+                            else model_lstm, verbose=1, epochs=3)
 
-classifier = RandomizedSearchCV(model, parameters, n_jobs=1, verbose=3, cv=3,
-                                refit=False, n_iter=n_iter)
-classifier.fit(X_train, y_train)
+    parameters = {'learning_rate': uniform(loc=0.001, scale=0.009),
+                  'batch_size': randint(8, 33)}
+    if m_type == 'LSTM':
+        parameters['dropout'] = uniform(loc=0.2, scale=0.3)
+        parameters['recurrent_dropout'] = uniform(loc=0.2, scale=0.3)
+        parameters['batch_size'] = [32]
 
-best_parameters = classifier.best_params_
+    n_iter = int(input('NUMBER OF POINTS TO TEST: '))
 
-model = model_cnn(learning_rate=best_parameters['learning_rate']) \
-    if m_type == 'CNN' \
-    else model_lstm(learning_rate=best_parameters['learning_rate'],
-                    dropout=best_parameters['dropout'],
-                    recurrent_dropout=best_parameters['recurrent_dropout'])
+    classifier = RandomizedSearchCV(model, parameters, n_jobs=1, verbose=3,
+                                    cv=3, refit=False, n_iter=n_iter)
+    classifier.fit(X_train, y_train)
 
-history = model.fit(X_train, y_train, epochs=5,
-                    validation_split=0.3, shuffle=True,
-                    batch_size=best_parameters['batch_size'],
-                    callbacks=[EarlyStopping()])
+    best_parameters = classifier.best_params_
+
+    model = model_cnn(learning_rate=best_parameters['learning_rate']) \
+        if m_type == 'CNN' \
+        else model_lstm(learning_rate=best_parameters['learning_rate'],
+                        dropout=best_parameters['dropout'],
+                        recurrent_dropout=best_parameters['recurrent_dropout'])
+
+    history = model.fit(X_train, y_train, epochs=5,
+                        validation_split=0.3, shuffle=True,
+                        batch_size=best_parameters['batch_size'],
+                        callbacks=[EarlyStopping()])
+else:
+    learning_rate_dist = uniform(loc=0.001, scale=0.009)
+    dropout_dist = uniform(loc=0.2, scale=0.3)
+
+    model = model_cnn(learning_rate=learning_rate_dist.rvs(1)[0]) \
+        if m_type == 'CNN' \
+        else model_lstm(learning_rate=learning_rate_dist.rvs(1)[0],
+                        dropout=dropout_dist.rvs(1)[0],
+                        recurrent_dropout=dropout_dist.rvs(1)[0])
+
+    history = model.fit(X_train, y_train, epochs=5,
+                        validation_split=0.3, shuffle=True,
+                        callbacks=[EarlyStopping()])
 
 # PREDICTION ##################################################################
 
