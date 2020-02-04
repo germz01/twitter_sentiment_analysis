@@ -8,4 +8,3 @@ every day is massive. With this report, I describe the project I developed for t
 Master's Degree in Computer Science, that is, a prediction-oriented analysis 
 of a dataset composed by almost $40000$ labeled tweets via a series of 
 algorithms like SVM, NB, CNN and LSTM.
-
