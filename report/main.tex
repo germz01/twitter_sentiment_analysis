@@ -29,7 +29,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         produced every day is massive. With this report, I describe the project I developed for the
         \textit{Human Language Technologies} class hosted by the University of Pisa's Master's Degree in
         Computer Science, that is, a prediction-oriented analysis of a dataset composed by almost $40000$
-        labeled tweets via a series of algorithms like SVM, NB, CNN and LSTM.
+        labeled tweets via a series of models like SVM, NB, CNN and LSTM.
     \end{abstract}
 
     \section{Corpus Collection} % (fold)
@@ -39,7 +39,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         build a corpus composed by an acceptable amount of documents. Among all the available platforms, I
         choosed to work with Twitter, since the documents, that is, the tweets, produced by the users are
         limited to be $280$ characters long at most, and since the API that is used for communicating with
-        the server is very simple and inuitive to use. In order to properly train the algorithms that I
+        the server is very simple and inuitive to use. In order to properly train the models that I
         wanted to compare, I assembled a corpus of almost $40000$ labeled tweets by requesting Twitter to
         download the documents used for the \textit{International Workshop on Semantic Evaluation}
         competitions from $2013$ to $2017$. I choosed to work with the documents provided by the SemEval
@@ -80,6 +80,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             \item $18209$ objective tweets;
         \end{itemize}
 
+        \noindent
         This time, both the two sets of documents are well represented. In order to provide a richer
         analysis, I decided to apply the classification algorithms on three types of problems; the
         positive-vs-negative-vs-neutral problem, the positive-vs-negative problem and finally the
@@ -133,7 +134,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         \end{figure}
 
         \noindent
-        In Figure \ref{fig:tags_obj_vs_subj} we can observ the tags' distribution for the subjective and
+        In Figure \ref{fig:tags_obj_vs_subj} we can observe the tags' distribution for the subjective and
         objective tweets. We can see that possessive wh-pronouns (WP\$), possessive pronouns (PRP\$) and
         superlative adjectives (JJS) are all indicators for objective tweets, while 'to' (TO), foreign words
         (FW) and wh-determiners (WDT) are indicators for subjective tweets. Finally, I have collected some of
@@ -168,7 +169,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         Sentiment Analysis branch has a rich literature and many tools and resoruces availables for learning.
         Having analysed the obtained corpus, as described in Section \ref{sec:corpus_collection} and Section
         \ref{sec:corpus_analysis}, the next step for my research was to implement a Classification procedure,
-        in which I decided to apply some popular Machine Learning algorithms like Support Vector Machines,
+        in which I decided to apply some popular Machine Learning models like Support Vector Machines,
         Naïve Bayes, Convolutional Neural Networks and Long Short-term Memory Recurrent Neural Networks, as
         described in \cite{semeval_2014,state_of_the_art,semeval_2016,esuli,attardi}. Being the corpus composed
         of documents labeled with three distinct labels, that is, positive, negative and neutral, I decided to
@@ -183,7 +184,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         \noindent
         As we might expect, for the second and third tasks the entire corpus was used, while for the first one
         I removed from the corpus all the documents labeled as neutral. As in a typical Machine Learning
-        procedure, the documents composing the corpus cannot be fed directly to the algorithms, since they are
+        procedure, the documents composing the corpus cannot be fed directly to the models, since they are
         texts, and not numbers, so, before applying the algorithms, I developed a preprocessing routine, in
         which I developed the conversion from texts understandable by humans to texts understandable by
         machines. After preprocessing the corpus I validated each one of the learners via the application of
@@ -236,7 +237,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             Long Short-term Memory Recurrent Neural Networks are greately influenced by the network's
             architecture, I decided, in order to ease the validation process for each one of the two
             algorithms, to fix a simple architecture and to apply the validation techniques to that fixed
-            structure for obtaining the best results. For enriching my analysis of the algorithm's performances,
+            structure for obtaining the best results. For enriching my analysis of the models' performances,
             I used and validated three types of word embeddings for the CNN and the LSTM algorithms:
 
             \begin{itemize}
@@ -264,7 +265,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                      \centering
                      \begin{tabular}{| c | c |}
                         \hline
-                        \textbf{Classifier} & \textbf{Accuracy} \\
+                        \textbf{Classifier} & \textbf{Score} \\
                         \hline
                         $SVM$ & $0.85$ \\
                         \hline
@@ -308,7 +309,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                 \centering
                 \begin{tabular}{| c | c |}
                     \hline
-                    \textbf{Classifier} & \textbf{Accuracy} \\
+                    \textbf{Classifier} & \textbf{Score} \\
                     \hline
                     $SVM$ & $0.64$ \\
                     \hline
@@ -359,7 +360,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                 \centering
                 \begin{tabular}{| c | c |}
                     \hline
-                    \textbf{Classifier} & \textbf{Accuracy} \\
+                    \textbf{Classifier} & \textbf{Score} \\
                     \hline
                     $SVM$ & $0.67$ \\
                     \hline
