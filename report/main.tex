@@ -199,9 +199,12 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             Routine that is composed by the following steps:
 
             \begin{enumerate}
-                \item Tokenization: the original documents are splitted into tokens via a tokenizer that is
+                \item Tokenization: the original documents are splitted into tokens via the
+                \href{https://www.nltk.org/api/nltk.tokenize.html#module-nltk.tokenize}{TweetTokenizer}
+                tokenizer provided by \href{https://www.nltk.org/py-modindex.html}{NLTK}. This tokenizer is
                 specifically trained to work on tweets;
-                \item Part Of Speech Tagging: each token list is tagged via the application of a POS tagger;
+                \item Part Of Speech Tagging: each token list is tagged via the application of a POS
+                tagger, also provided by NLTK;
                 \item Cleaning: for each token list, the token that are not alphanumeric and that contains
                 stop words are removed;
                 \item Lemmatization: each one of the token that came out of the Cleaning phase is transformed
@@ -221,6 +224,34 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             \noindent
             \texttt{['april', 'live', 'sharknado', 'without', 'tiny', 'chainsaw']}.
         % subsection preprocessing_routine (end)
+
+        \subsection{Pipeline} % (fold)
+        \label{sub:pipeline}
+            Before feeding the corpus to the Naïve Bayes and Support Vector Machine classifiers I further
+            preprocessed the documents via the application of a Pipeline composed by:
+
+            \begin{enumerate}
+                \item A Vectorizer, that is, the
+                \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer}{CountVectorizer}
+                provided by
+                \href{https://scikit-learn.org/stable/index.html}{scikit-learn}, which takes in input
+                the tokenized documents from the Preprocessing Routine and, for each tweet, returns a list
+                of integers where each integer corresponds to a word in the tweet;
+                \item A Transformer, that is, the
+                \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html#sklearn.feature_extraction.text.TfidfVectorizer}{TfidfTransformer}
+                provided by scikit-learn, which takes the matrix created by the Vectorizer and
+                transform it to a normalized or tf-idf representation;
+                \item A Selectioner, that is, the
+                \href{https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html}{SelectKBest} provided by scikit-learn, which
+                takes the output of the Transformer and select the k most representative features via the
+                application of the chi-squared test;
+            \end{enumerate}
+
+            \noindent
+            Moreover, for the Selectioner, the number of features selected, that is, the k parameter,
+            ranges between $1000$ and $5000$. This parameter is adapted depending on the task during the
+            Validation Routine, which is described in the next section.
+        % subsection pipeline (end)
 
         \subsection{Validation Routine} % (fold)
         \label{sub:validation_routine}
