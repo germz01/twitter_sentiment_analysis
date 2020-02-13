@@ -3,41 +3,31 @@ import pandas as pd
 
 # MERGE THE DATASETS IN ONE TRAINING SET ######################################
 
-dirs = [x for x in os.walk('../data/')][0][1]
+tasks = ['A', 'B']
 
-datasets_tr = list()
+for task in tasks:
+    datasets = list()
 
-for year in dirs:
-    name = 'twitter_{}_train_A.txt'.format(year)
-    ds = pd.read_csv('../data/' + year + '/' + name, index_col=False, sep='\t',
-                     names=['id', 'label', 'tweet'])
-    datasets_tr.append(ds)
+    for file in os.listdir('../data/{}/train'.format(task)):
+        if file.split('.')[-1] == 'txt':
+            ds = pd.read_csv('../data/{}/train/{}'.format(task, file),
+                             index_col=False, sep='\t',
+                             names=['id', 'label', 'tweet'] if task == 'A' else
+                             ['id', 'topic', 'label', 'tweet'])
+            if task == 'B':
+                datasets.append(ds[ds.label.isin(['positive', 'negative'])])
+            else:
+                datasets.append(ds)
 
-    try:
-        ds = \
-            pd.read_csv('../data/' + year + '/' + name.replace('train', 'dev'),
-                        index_col=False, sep='\t',
-                        names=['id', 'label', 'tweet'])
-        datasets_tr.append(ds)
-    except Exception as e:
-        pass
+    f_ds = pd.concat(datasets, ignore_index=True)
 
-    try:
-        ds = pd.read_csv('../data/' + year + '/' +
-                         name.replace('train', 'test'), sep='\t',
-                         index_col=False, names=['id', 'label', 'tweet'])
-        datasets_tr.append(ds)
-    except Exception as e:
-        pass
+    f_ds = f_ds.sample(frac=1).reset_index(drop=True)
 
-f_ds = pd.concat(datasets_tr, ignore_index=True)
-
-f_ds = f_ds.sample(frac=1).reset_index(drop=True)
-
-f_ds.drop(f_ds[f_ds.tweet == 'Not Available'].index, inplace=True)
-f_ds.drop_duplicates(subset='tweet', inplace=True)
-f_ds.drop(labels='id', axis=1, inplace=True)
+    f_ds.drop(f_ds[f_ds.tweet == 'Not Available'].index, inplace=True)
+    f_ds.drop_duplicates(subset='tweet', inplace=True)
+    f_ds.drop(labels='id', axis=1, inplace=True)
 
 # SAVE THE FINAL TRAINING SET AS A CSV FILE ###################################
 
-f_ds.to_csv(path_or_buf='../data/train.csv', index=False)
+    f_ds.to_csv(path_or_buf='../data/{}/merged_train.csv'.format(task),
+                index=False)

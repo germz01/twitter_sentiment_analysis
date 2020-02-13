@@ -268,8 +268,12 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             Long Short-term Memory Recurrent Neural Networks are greately influenced by the network's
             architecture, I decided, in order to ease the validation process for each one of the two
             algorithms, to fix a simple architecture and to apply the validation techniques to that fixed
-            structure for obtaining the best results. For enriching my analysis of the models' performances,
-            I used and validated three types of word embeddings for the CNN and the LSTM algorithms:
+            structure for obtaining the best results. The architecture I selected for the CNN is composed
+            by an Embedding Layer, followed by a Convolutional Layer, a Max Pooling and finally by a Fully
+            Connected Neural Network. The architecture I selected for the LSTM is composed by an Embedding
+            Layer, followed by a LSTM Layer and finally by a Fully Connected Neural Network For enriching
+            my analysis of the models' performances, I used and validated three types of word embeddings
+            for the CNN and the LSTM algorithms:
 
             \begin{itemize}
                 \item a word embedding learned during the training phase with $100$ entries for each word;

@@ -19,36 +19,47 @@ def get_wn_pos(token):
 
 # IMPORTING THE TRAINING SET AND THE TEST SET #################################
 
-trainset = pd.read_csv('../data/train.csv')
+trainset_A = pd.read_csv('../data/A/merged_train.csv')
+trainset_B = pd.read_csv('../data/B/merged_train.csv')
 
 # TOKENIZATION ################################################################
 
 tokenizer = TweetTokenizer(strip_handles=True, preserve_case=False,
                            reduce_len=True)
 
-trainset.tweet = [tokenizer.tokenize(tweet) for tweet in
-                  tqdm(trainset.tweet, desc='TOKENIZATION')]
+trainset_A.tweet = [tokenizer.tokenize(tweet) for tweet in
+                    tqdm(trainset_A.tweet, desc='TOKENIZATION A')]
+trainset_B.tweet = [tokenizer.tokenize(tweet) for tweet in
+                    tqdm(trainset_B.tweet, desc='TOKENIZATION B')]
 
 # POS TAGGING #################################################################
 
-trainset.tweet = [pos_tag(tweet) for tweet in
-                  tqdm(trainset.tweet, desc='POS TAGGING')]
+trainset_A.tweet = [pos_tag(tweet) for tweet in
+                    tqdm(trainset_A.tweet, desc='POS TAGGING A')]
+trainset_B.tweet = [pos_tag(tweet) for tweet in
+                    tqdm(trainset_B.tweet, desc='POS TAGGING B')]
 
 # STOP WORD CLEANING AND REDUCTION TO ONLY ALPHANUMERIC TOKENS ################
 
 stopwords = stopwords.words('english')
 
-trainset.tweet = [[token for token in tweet if token[0].isalpha() and
-                  token[0] not in stopwords] for tweet in
-                  tqdm(trainset.tweet, desc='CLEANING')]
+trainset_A.tweet = [[token for token in tweet if token[0].isalpha() and
+                    token[0] not in stopwords] for tweet in
+                    tqdm(trainset_A.tweet, desc='CLEANING A')]
+trainset_B.tweet = [[token for token in tweet if token[0].isalpha() and
+                    token[0] not in stopwords] for tweet in
+                    tqdm(trainset_B.tweet, desc='CLEANING B')]
 
 # LEMMATIZATION ###############################################################
 
 lemmatizer = WordNetLemmatizer()
 
-trainset.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
-                  token in tweet] for tweet in
-                  tqdm(trainset.tweet, desc='LEMMATIZATION')]
+trainset_A.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
+                    token in tweet] for tweet in
+                    tqdm(trainset_A.tweet, desc='LEMMATIZATION A')]
+trainset_B.tweet = [[lemmatizer.lemmatize(token[0], get_wn_pos(token)) for
+                    token in tweet] for tweet in
+                    tqdm(trainset_B.tweet, desc='LEMMATIZATION B')]
 
 # REMOVING WORDS THAT ARE PRESENT IN ALL THE LABELS ###########################
 
@@ -57,7 +68,7 @@ tokens_set_per_label = dict()
 for label in ['positive', 'negative', 'neutral']:
     total_tokens_list = list()
 
-    for token_list in trainset[trainset.label == label].tweet:
+    for token_list in trainset_A[trainset_A.label == label].tweet:
         for token in token_list:
             total_tokens_list.append(token)
 
@@ -67,9 +78,10 @@ intersection = tokens_set_per_label['positive'].\
     intersection(tokens_set_per_label['negative']).\
     intersection(tokens_set_per_label['neutral'])
 
-trainset.tweet.apply(lambda x: [token for token in x if token not in
-                     intersection])
+trainset_A.tweet.apply(lambda x: [token for token in x if token not in
+                       intersection])
 
 # SAVING THE PREPROCESSED DATASETS ############################################
 
-trainset.to_csv('../data/preprocessed_train.csv', index=False)
+trainset_A.to_csv('../data/A/preprocessed_train.csv', index=False)
+trainset_B.to_csv('../data/B/preprocessed_train.csv', index=False)
