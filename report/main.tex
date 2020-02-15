@@ -186,30 +186,33 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
     \label{sec:classification}
         The Human Language Technologies research's field is very popular at the moment, and, in particular, the
         Sentiment Analysis branch has a rich literature and many tools and resoruces availables for learning.
-        Having analysed the obtained corpus, as described in Section \ref{sec:corpus_collection} and Section
+        Having analysed the obtained corpora, as described in Section \ref{sec:corpus_collection} and Section
         \ref{sec:corpus_analysis}, the next step for my research was to implement a Classification procedure,
         in which I decided to apply some popular Machine Learning models like Support Vector Machines,
         Naïve Bayes, Convolutional Neural Networks and Long Short-term Memory Recurrent Neural Networks, as
-        described in \cite{semeval_2014,state_of_the_art,semeval_2016,esuli,attardi}. Being the corpus composed
-        of documents labeled with three distinct labels, that is, positive, negative and neutral, I decided to
-        direct the Classification phase towards the takling of three different tasks:
+        described in \cite{semeval_2014,state_of_the_art,semeval_2016,esuli,attardi}. Being the corpora composed
+        of documents labeled with three distinct labels and two distinc labels, respectively, that is, positive,
+        negative and neutral, and positive and negative, I decided to direct the Classification phase towards the
+        takling of three different tasks:
 
         \begin{itemize}
-            \item Classification of positive tweets vs negative tweets;
-            \item Classification of positive tweets vs negative tweets vs neutral tweets;
-            \item Classification of subjective tweets vs objective tweets;
+            \item Classification of positive tweets vs negative tweets as in the B Task of 2017 SemEval
+            competition;
+            \item Classification of positive tweets vs negative tweets vs neutral tweets as in the A Task of the
+            2017 SemEval competition;
+            \item Classification of subjective tweets vs objective tweets, similar to the A Task of the 2017
+            SemEval competition, but with a dataset composed by documents that are either subjective
+            (positive or negative) or objective (neutral);
         \end{itemize}
 
         \noindent
-        As we might expect, for the second and third tasks the entire corpus was used, while for the first one
-        I removed from the corpus all the documents labeled as neutral. As in a typical Machine Learning
-        procedure, the documents composing the corpus cannot be fed directly to the models, since they are
-        texts, and not numbers, so, before applying the algorithms, I developed a preprocessing routine, in
-        which I developed the conversion from texts understandable by humans to texts understandable by
-        machines. After preprocessing the corpus I validated each one of the learners via the application of
-        well-known validation techniques like K-Fold Cross Validation and Random Grid Search. Finally, for each
-        one of the three tasks, I collected and compared the results provided by the application of the
-        various learning algorithms.
+        As in a typical Machine Learning procedure, the documents composing the corpus cannot be fed directly to
+        the models, since they are texts, and not numbers, so, before applying the algorithms, I developed a
+        preprocessing routine, in which I developed the conversion from texts understandable by humans to texts
+        understandable by machines. After preprocessing the corpus I validated each one of the learners via the
+        application of well-known validation techniques like K-Fold Cross Validation and Random Grid Search.
+        Finally, for each one of the three tasks, I collected and compared the results provided by the
+        application of the various learning algorithms.
 
         \subsection{Preprocessing Routine} % (fold)
         \label{sub:preprocessing_routine}
@@ -246,7 +249,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
 
         \subsection{Pipeline} % (fold)
         \label{sub:pipeline}
-            Before feeding the corpus to the Naïve Bayes and Support Vector Machine classifiers I further
+            Before feeding the corpora to the Naïve Bayes and Support Vector Machine classifiers I further
             preprocessed the documents via the application of a Pipeline composed by:
 
             \begin{enumerate}
@@ -279,9 +282,8 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             takling. Being the task of tuning every single hyperparameter a cumbersome one, I decided to
             apply the well-know Random Grid Search technique, as described in \cite{random_grid_search}, in
             order to discover the most effective combination of hyperparameters for the models I want to
-            compare. I used the $80\%$ of the corpus as a training set, while the remaining $20\%$ was used as
-            testing set. Moreover, since the training/validation set extracted from the corpus
-            presents a reasonable amount of examples, for each "point" produced by the Random Grid Search, I
+            compare. I used the $70\%$ of the corpora as a training set, while the remaining $30\%$ was used as
+            validation set. Before validating, for each "point" produced by the Random Grid Search, I
             applied the K-Fold Cross Validation technique, setting the value for the K parameter to $3$.
             Moreover, since the performance of algorithms like the Convolutional Neural Networks and the
             Long Short-term Memory Recurrent Neural Networks are greately influenced by the network's
@@ -295,8 +297,8 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             for the CNN and the LSTM algorithms:
 
             \begin{itemize}
-                \item a word embedding learned during the training phase with $100$ entries for each word;
-                \item the GloVe \cite{glove} pre-trained word vectors with $100$ entries for each word;
+                \item a word embedding learned during the training phase with $300$ entries for each word;
+                \item the GloVe \cite{glove} pre-trained word vectors with $300$ entries for each word;
                 \item the fastText \cite{fasttext} pre-trained word vectors with $300$ entries for each
                 word;
             \end{itemize}
@@ -310,10 +312,9 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         \subsection{Positive vs Negative Classification} % (fold)
         \label{sub:positive_vs_negative_classification}
             As we might think, this is the easier one among the tasks I have decided to approach. This is
-            because the original multilabel classification problem is downgraded to a binary classification
-            problem, and, moreover, by removing the documents labeled as neutral we obtain a corpus where
-            the positive labeled tweets are very well separated from the negative ones, hence resulting in
-            a easier classification from the Machine Learning point of view.
+            because it is essentially a binary classification problem applied to a set of very small datasets,
+            each one representing a topic, hence resulting in a easier classification from the Machine Learning
+            point of view.
 
                 \begin{table}[h]
                      \centering
@@ -321,21 +322,21 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                         \hline
                         \textbf{Classifier} & \textbf{Score} \\
                         \hline
-                        $SVM$ & $0.85$ \\
+                        $SVM$ & $0.64$ \\
                         \hline
-                        $NB$ & $0.82$ \\
+                        $NB$ & $0.65$ \\
                         \hline
-                        $CNN_A$ & $0.83$ \\
+                        $CNN_A$ & $0.68$ \\
                         \hline
-                        $CNN_G$ & $0.81$ \\
+                        $CNN_G$ & $0.65$ \\
                         \hline
-                        $CNN_F$ & $0.85$ \\
+                        $CNN_F$ & $0.67$ \\
                         \hline
-                        $LSTM_A$ & $0.83$ \\
+                        $LSTM_A$ & $0.77$ \\
                         \hline
-                        $LSTM_G$ & $0.84$ \\
+                        $LSTM_G$ & $0.64$ \\
                         \hline
-                        $LSTM_F$ & $0.83$ \\
+                        $LSTM_F$ & $0.62$ \\
                         \hline
                     \end{tabular}
                     \caption{Models' comparison for the positive-vs-negative classification task.}
@@ -343,18 +344,27 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                 \end{table}
 
             \noindent
-            In Table \ref{tab:pn_comparison} we can see the results in terms of Accuracy for the application
-            of the models to the corpus containing only positive and negative documents. As we can see, in
-            general, the Accuracy is above $0.80$, this due to the fact that, as I said, this
-            classification task is not so difficult compared to the other two. The higher Accuracy is
-            reached by the SVM model and by the CNN using the fastText pre-trained word vectors, while the
-            worst Accuracy is obtained by the CNN using the GloVe pre-trained word vectors.
+            In Table \ref{tab:pn_comparison} we can see the results for the application
+            of the models to the B Task corpus containing only positive and negative documents. The score for
+            each one of the classifiers is obtained by via the following formula:
+
+            \begin{equation*}
+                \rho^{PN} =\frac{1}{2}(\rho^{P} + \rho^{N}) = \frac{1}{2}
+                \left ( \frac{PP}{PP + NP} + \frac{NN}{NN + PN} \right )
+            \end{equation*}
+
+            \noindent
+            where $\rho^{P}$ and $\rho^{N}$ are the positive and negative class recall, respectively. Each
+            classifier computes this score for every topic, and the mean value is reported as the final score.
+            As we can  see, in general, the score is above $0.60$. The higher score is
+            reached by the LSTM using a word embedding learned during the training phase and by the CNN using a
+            word embedding learned during the training phase, while the worst score is obtained by the LSTM using
+            the fastText pre-trained word vectors.
         % subsection positive_vs_negative_classification (end)
 
         \subsection{Positive vs Negative vs Neutral Classification} % (fold)
         \label{sub:positive_vs_negative_vs_neutral_classification}
-            In order to takle this task, the entire corpus is used, with the only modification to the
-            documents being the application of the preprocessing routine described in Section
+            In order to takle this task, the entire corpus is preprocessed as described in Section
             \ref{sub:preprocessing_routine}. This type of task results to be more difficult compared to
             the one described in Section \ref{sub:positive_vs_negative_classification}, both in term of
             time and computational resources.
@@ -365,21 +375,21 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                     \hline
                     \textbf{Classifier} & \textbf{Score} \\
                     \hline
-                    $SVM$ & $0.64$ \\
+                    $SVM$ & $0.51$ \\
                     \hline
-                    $NB$ & $0.61$ \\
+                    $NB$ & $0.51$ \\
                     \hline
-                    $CNN_A$ & $0.64$ \\
+                    $CNN_A$ & $0.65$ \\
                     \hline
-                    $CNN_G$ & $0.58$ \\
+                    $CNN_G$ & $0.60$ \\
                     \hline
-                    $CNN_F$ & $0.62$ \\
+                    $CNN_F$ & $0.61$ \\
                     \hline
-                    $LSTM_A$ & $0.61$ \\
+                    $LSTM_A$ & $0.71$ \\
                     \hline
-                    $LSTM_G$ & $0.62$ \\
+                    $LSTM_G$ & $0.61$ \\
                     \hline
-                    $LSTM_F$ & $0.64$ \\
+                    $LSTM_F$ & $0.54$ \\
                     \hline
                 \end{tabular}
                 \caption{Models' comparison for the positive-vs-negative-vs-neutral classification task.}
@@ -387,21 +397,26 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             \end{table}
 
             \noindent
-            In Table \ref{tab:a_comparison} we can see the results in terms of Accuracy for the application
-            of the models to the entire corpus. As we can see, in general, the Accuracy tend to be greater
-            than $0.60$, with the exception of the CNN model using the GloVe pre-trained word vectors. This
-            time the best models are, respectively, the SVM model, the CNN using word embeddings learned
-            during the training phase and finally the LSTM model using the fastText pre-trained word
-            vectors.
+            In Table \ref{tab:a_comparison} we can see the results of the application of the models to the A Task
+            corpus. The score for each one of the classifiers is obtained by via the following formula:
+
+            \begin{equation*}
+                F_1^{PN} = \frac{F_1^P + F_1^N}{2}
+            \end{equation*}
+
+            \noindent
+            where $F_1^P$ and $F_1^N$ are the $F_1$ score for the positive and negative class, respectively.
+            As we can see, in general, the score tend to be greater
+            than $0.50$. This time the best models are, respectively, the LSTM using a word embedding learned
+            during the training phase and the CNN using word embeddings learned during the training phase, while
+            the worst models are the SVM model and the NB model.
         % subsection positive_vs_negative_vs_neutral_classification (end)
 
         \subsection{Subjective vs Objective Classification} % (fold)
         \label{sub:subjective_vs_objective_classification}
             Finally I discuss the last of the tasks that I takled for my project, that is, the
-            classification of subjective and objective tweets. As for the problem described in Section
-            \ref{sub:positive_vs_negative_vs_neutral_classification}, also for this type of
-            classification the entire corpus was used. For the tasks described in Sections
-            \ref{sub:positive_vs_negative_classification} and
+            classification of subjective and objective tweets using the A Task corpus. For the tasks described in
+            Sections \ref{sub:positive_vs_negative_classification} and
             \ref{sub:positive_vs_negative_vs_neutral_classification} the labels were substituted with
             positive integers from $0$ to $1$ for the positive-vs-negative classification, and from $0$ to
             $2$ for the positive-vs-negative-vs-neutral classification. For this type of classification I
@@ -418,19 +433,19 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
                     \hline
                     $SVM$ & $0.67$ \\
                     \hline
-                    $NB$ & $0.64$ \\
+                    $NB$ & $0.65$ \\
                     \hline
-                    $CNN_A$ & $0.64$ \\
+                    $CNN_A$ & $0.78$ \\
                     \hline
-                    $CNN_G$ & $0.64$ \\
+                    $CNN_G$ & $0.70$ \\
                     \hline
-                    $CNN_F$ & $0.66$ \\
+                    $CNN_F$ & $0.68$ \\
                     \hline
-                    $LSTM_A$ & $0.68$ \\
+                    $LSTM_A$ & $0.77$ \\
                     \hline
-                    $LSTM_G$ & $0.66$ \\
+                    $LSTM_G$ & $0.68$ \\
                     \hline
-                    $LSTM_F$ & $0.68$ \\
+                    $LSTM_F$ & $0.69$ \\
                     \hline
                 \end{tabular}
                 \caption{Models' comparison for the subjective-vs-objective classification task.}
@@ -438,16 +453,15 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             \end{table}
 
             \noindent
-            In Table \ref{tab:so_comparison} we can see the results in terms of Accuracy for the application
-            of the models to the entire corpus composed by subjective and objective tweets. By observing the
-            Table we can notice that, despite the fact that also for this task the entire corpus was used,
-            the average Accuracy is greater than the one obtained for the task described in Section
-            \ref{sub:positive_vs_negative_vs_neutral_classification}. This is due to the fact that this
-            type of task is a binary classification task, and not a multilabel classification one, in which
-            each one of the two labels is well represented, as we can see in Section
-            \ref{sec:corpus_analysis}. We can see that the best models are both LSTMs, one using the
-            fastText pre-trained word vectors and the other using a word embedding learned during the
-            training phase, followed closely by the SVM model.
+            In Table \ref{tab:so_comparison} we can see the results for the application
+            of the models to the A Task corpus composed by subjective and objective tweets. For obtaining the
+            score, each classifier applied the formula described in Section
+            \ref{sub:positive_vs_negative_classification}, being this a binary classification task, and not a
+            multilabel classification task as the one described in Section
+            \ref{sub:positive_vs_negative_vs_neutral_classification} We can see that the best model is
+            represented by a CNN using word embeddings learned during the training phase, followed closely by a
+            LSTM using word embeddings learned during the training phase. The worst score is obtained by the NB
+            model.
         % subsection subjective_vs_objective_classification (end)
     % section classification (end)
 
@@ -455,8 +469,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
     \label{sec:conclusions}
         The Sentiment Analysis research field is very active at the moment, with a great number of paper
         available and many tools and resources that can be used for learning and enriching our knowledge
-        about
-        the subject. The possibility to freely access great and constantly updated amount of data, like, for
+        about the subject. The possibility to freely access great and constantly updated amount of data, like, for
         example, Twitter's tweets, Facebook's posts, screenplays, etc. etc., makes it easy to experiment
         with the available models or even to create new ones in order to obtain better performances in
         comparison with the old ones. With this project I learned about how to obtain a good amount of
@@ -466,9 +479,9 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         learned how to use well-know models like Support Vector Machines, Naïve Bayes, Convolutional Neural
         Networks and Long Short-term Memory Recurrent Neural Networks in order to classify the sentiment
         behind a document written by an human user, which nowadays can be an useful resource to be used
-        in a variety of application's fields. I think that the performances I obtained in term of Accuracy
-        score, especially the CNN and LSTM ones, might be upgraded via the use of different architectures,
-        but, as I said before, for my project I preferred a simpler approach.
+        in a variety of application's fields. I think that the performances I obtained for the CNNs and LSTMs
+        might be upgraded via the use of different architectures, but, as I said before, for my project I
+        preferred a simpler approach.
     % section conclusions (end)
 
     \begin{thebibliography}{9}
