@@ -28,11 +28,12 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         is chosen by the user, either Facebook, or Instagram or Twitter, the amount of textual data that is
         produced every day is massive. With this report, I describe the project I developed for the
         \textit{Human Language Technologies} class hosted by the University of Pisa's Master's Degree in
-        Computer Science, that is, a prediction-oriented analysis of a dataset composed by almost $40000$
-        labeled tweets via a series of models like SVM, NB, CNN and LSTM.
+        Computer Science, that is, a prediction-oriented analysis of two datasets composed by labeled tweets,
+        one of which provides informations also on the tweets' topic, via a series of models like SVM, NB, CNN
+        and LSTM.
     \end{abstract}
 
-    \section{Corpus Collection} % (fold)
+    \section{Corpora Collection} % (fold)
     \label{sec:corpus_collection}
         The amount of textual data produced by the users on the various Social Networks on a day-by-day
         basis is massive, and, for this reason, it is not too difficult to scrape the web in order to
@@ -40,52 +41,70 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         choosed to work with Twitter, since the documents, that is, the tweets, produced by the users are
         limited to be $280$ characters long at most, and since the API that is used for communicating with
         the server is very simple and inuitive to use. In order to properly train the models that I
-        wanted to compare, I assembled a corpus of almost $40000$ labeled tweets by requesting Twitter to
-        download the documents used for the \textit{International Workshop on Semantic Evaluation}
-        competitions from $2013$ to $2017$. I choosed to work with the documents provided by the SemEval
+        wanted to compare, I assembled two corpora of almost $40000$ and $17000$ labeled tweets, respectively, by
+        requesting Twitter to download the documents used for the A and B Tasks of the
+        \textit{International Workshop on Semantic Evaluation} competitions from $2013$ to $2017$.
+        I choosed to work with the documents provided by the SemEval
         competitions because every tweet was hand-labeled by a human, that is, guaranteeing a sound
-        catalogation of the sentiments expressed by the tweets. A tweet can be labeled either as
-        positive, negative, or neutral. Despite the tweets' labels being so well defined, a SemEval
+        catalogation of the sentiments expressed by the tweets. The documents composing the A Task corpus can be
+        labeled either as positive, negative or neutral, while the documents composing the B Task corpus can be
+        labeled either as positive or negative. Despite the tweets' labels being so well defined, a SemEval
         dataset is quite small if it is taken on its own. This is due to the fact that, since Twitter is a
         very dynamic and constantly upgraded platform, some of the documents provided by each dataset
         were deleted by the users. This is why I decided to merge the datasets provided by the various
-        competitions in order to obtain the final version of the corpus.
+        competitions in order to obtain the final version of the corpora.
     % section corpus_collection (end)
 
     \section{Corpus Analysis} % (fold)
     \label{sec:corpus_analysis}
-        The original version of the corpus I assembled was composed by more than $40000$ labeled tweets.
-        As I said before, some of the tweets were deleted by the users, resulting in a document
-        containing the 'Not Available' string. Moreover, the corpus contained a small percentage of
-        duplicate tweets. By removing the not available tweets and the duplicates, I obtained the final
-        version of the corpus composed by $39308$ labeled documents. In particular, the obtained corpus
+        The original version of the corpora I assembled was composed by more than $48000$ labeled tweets for the
+        A Task corpus, and more than $18000$ for the B Task corpus. As I said before, some of the tweets were
+        deleted by the users, resulting in a document containing the 'Not Available' string. Moreover, the
+        corpora contained a small percentage of duplicate tweets. By removing the not available tweets and the
+        duplicates, I obtained the final version of the corpora composed by $39308$ labeled documents for the
+        A Task corpus, and by $16333$ for the B Task corpus. In particular, the obtained corpus for the A Task
         contains:
 
         \begin{itemize}
             \item $15092$ positive tweets;
-            \item $6007$ negative tweets;
-            \item $18209$ neutral tweets;
+            \item $6005$ negative tweets;
+            \item $18211$ neutral tweets;
+        \end{itemize}
+
+        while the one for the B Task contains:
+
+        \begin{itemize}
+            \item $12833$ positive tweets;
+            \item $3500$ negative tweets;
         \end{itemize}
 
         \noindent
-        As we can see, the majority of the documents composing the corpus are labeled as neutral, and also
+        As we can see, the majority of the documents composing the A Task corpus are labeled as neutral, and also
         the positive tweets are very well represented. Conversely, the negative ones are poorly
         represented, and, as we will see, this fact will be crucial for their classification in the
-        learning and testing phases of the algorithms I will apply. The type of subdivision used for the
-        documents allows the corpus to be considered as containing both subjective and objective tweets.
-        By considering this new subdivision, we can see that the corpus contains:
+        learning and testing phases of the algorithms I will apply. For the B Task corpus we can see a similar
+        situation, in which almost all documents are labeled as positive, while a small percentage are labeled as
+        negative. The type of subdivision used for the A Task documents allows the corpus to be considered as
+        containing both subjective and objective tweets. By considering this new subdivision, we can see that the
+        corpus contains:
 
         \begin{itemize}
-            \item $21099$ subjective tweets;
-            \item $18209$ objective tweets;
+            \item $21097$ subjective tweets;
+            \item $18211$ objective tweets;
         \end{itemize}
 
         \noindent
         This time, both the two sets of documents are well represented. In order to provide a richer
         analysis, I decided to apply the classification algorithms on three types of problems; the
-        positive-vs-negative-vs-neutral problem, the positive-vs-negative problem and finally the
-        subjective-vs-objective problem. For starting my analysis, I tokenized the tweets contained in the
-        corpus and I observed the distribution of the word frequencies.
+        positive-vs-negative-vs-neutral problem represented by the A Task of the 2017 SemEval competiton, the
+        positive-vs-negative problem represented by the B Task of the 2017 SemEval competition and finally the
+        subjective-vs-objective problem, which uses the alternative version of the A Task corpus to answer the
+        Task considering a different perspective. Before starting with the classification phase, which is
+        described in Section \ref{sec:classification}, I studied the A Task corpus in order to have a better
+        understanding of the documents composing the dataset. A similar study can be obtained also for the B Task
+        corpus, but, since the documents composing the dataset are divided by topic, I think is more interesting
+        to analyse the less specific A Task corpus. For starting my analysis, I tokenized the tweets contained in
+        the corpus and I observed the distribution of the word frequencies.
 
         \begin{figure}[h]
             \centering
@@ -123,8 +142,8 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         As we can see from Figure \ref{fig:tags_pos_vs_neg}, POS tags for positive and negative tweets are not
         distributed evenly, hence we can infer the sentiment behing a document by looking at its tags. We can
         see that the presence of a plural proper noun (NNPS) is a strong indicator for the positive label as
-        well as past participle verbs (VBN) and modal (MD). For the negative label, we can see that 'to' (TO)
-        is a strong indicator, as well as symbol (SYM) and singular proper nouns (NNP).
+        well as past participle verbs (VBN) and modal (MD). For the negative label, we can see that superlative
+        adverbs (RBS) is a strong indicator, as well as List item marker (LS) and possessive wh-pronouns (WP\$).
 
         \begin{figure}[h]
             \centering
@@ -135,13 +154,13 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
 
         \noindent
         In Figure \ref{fig:tags_obj_vs_subj} we can observe the tags' distribution for the subjective and
-        objective tweets. We can see that possessive wh-pronouns (WP\$), possessive pronouns (PRP\$) and
-        superlative adjectives (JJS) are all indicators for objective tweets, while 'to' (TO), foreign words
-        (FW) and wh-determiners (WDT) are indicators for subjective tweets. Finally, I have collected some of
-        the most used words for positive and negative tweets and represented them via wordclouds, in order to
-        provide a better understanding of the sentiments that labels the documents composing the corpus, and for
-        providing some visual representation of the informations showed with Figure \ref{fig:tags_pos_vs_neg}
-        and Figure \ref{fig:tags_obj_vs_subj}.
+        objective tweets. We can see that possessive superlative adjectives (JJS), comparative adverbs (RBR) and
+        superlative adverbs (RBS) are all indicators for objective tweets, while list item markers (LS),
+        foreign words (FW) and plural proper nouns (NNPS) are indicators for subjective tweets. Finally, I have
+        collected some of the most used words for positive and negative tweets and represented them via
+        wordclouds, in order to provide a better understanding of the sentiments that labels the documents
+        composing the corpus, and for providing some visual representation of the informations showed with
+        Figure \ref{fig:tags_pos_vs_neg} and Figure \ref{fig:tags_obj_vs_subj}.
 
         \begin{figure}[h]
             \centering

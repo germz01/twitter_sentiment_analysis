@@ -11,7 +11,7 @@ from wordcloud import WordCloud
 
 # IMPORTING ###################################################################
 
-ds = pd.read_csv('../data/train.csv')
+ds = pd.read_csv('../data/A/merged_train.csv')
 
 # DISTRIBUTION OF THE WORD FREQUENCIES ########################################
 
@@ -149,7 +149,7 @@ plt.close()
 # WORDCLOUD ###################################################################
 
 ds = pd.read_csv(
-    '../data/preprocessed_train.csv',
+    '../data/A/preprocessed_train.csv',
     converters={'tweet': lambda x: x[1:-1].replace("'", "").split(', ')})
 
 texts_dict = dict()
