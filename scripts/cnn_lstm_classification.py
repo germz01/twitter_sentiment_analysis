@@ -210,7 +210,7 @@ if validation == 'Y':
     history = model.fit(X_train, y_train, epochs=5,
                         validation_split=0.3, shuffle=True,
                         batch_size=best_parameters['batch_size'],
-                        callbacks=[EarlyStopping()])
+                        callbacks=[EarlyStopping(patiance=1)])
 else:
     learning_rate_dist = uniform(loc=0.001, scale=0.009)
     dropout_dist = uniform(loc=0.2, scale=0.3)
@@ -223,7 +223,7 @@ else:
 
     history = model.fit(X_train, y_train, epochs=5,
                         validation_split=0.3, shuffle=True,
-                        callbacks=[EarlyStopping()])
+                        callbacks=[EarlyStopping(patience=1)])
 
 # PREDICTION ##################################################################
 
