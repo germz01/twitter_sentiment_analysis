@@ -120,7 +120,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         proposed in \cite{twitter_as_a_corpus}, I updated the tokens obtained by the early stage of the
         analysis by adding the tags from the application of a Part of Speech Tagging procedure, and I
         observed the tags' distribution between the corpus' documents when considering only the
-        positive/negative tweets and the subjective/objective tweets.
+        positive/negative tweets and the subjective/objective ones.
 
         \begin{figure}[h]
             \centering
@@ -206,13 +206,13 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
         \end{itemize}
 
         \noindent
-        As in a typical Machine Learning procedure, the documents composing the corpus cannot be fed directly to
+        As in a typical Machine Learning procedure, the documents composing the corpora cannot be fed directly to
         the models, since they are texts, and not numbers, so, before applying the algorithms, I developed a
         preprocessing routine, in which I developed the conversion from texts understandable by humans to texts
-        understandable by machines. After preprocessing the corpus I validated each one of the learners via the
+        understandable by machines. After preprocessing the corpora I validated each one of the learners via the
         application of well-known validation techniques like K-Fold Cross Validation and Random Grid Search.
         Finally, for each one of the three tasks, I collected and compared the results provided by the
-        application of the various learning algorithms.
+        application of the various models.
 
         \subsection{Preprocessing Routine} % (fold)
         \label{sub:preprocessing_routine}
@@ -292,9 +292,9 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             structure for obtaining the best results. The architecture I selected for the CNN is composed
             by an Embedding Layer, followed by a Convolutional Layer, a Max Pooling and finally by a Fully
             Connected Neural Network. The architecture I selected for the LSTM is composed by an Embedding
-            Layer, followed by a LSTM Layer and finally by a Fully Connected Neural Network For enriching
+            Layer, followed by a LSTM Layer and finally by a Fully Connected Neural Network. For enriching
             my analysis of the models' performances, I used and validated three types of word embeddings
-            for the CNN and the LSTM algorithms:
+            for the CNN and the LSTM models:
 
             \begin{itemize}
                 \item a word embedding learned during the training phase with $300$ entries for each word;
@@ -346,7 +346,7 @@ Project's Repository: \href{https://github.com/germz01/twitter_sentiment_analysi
             \noindent
             In Table \ref{tab:pn_comparison} we can see the results for the application
             of the models to the B Task corpus containing only positive and negative documents. The score for
-            each one of the classifiers is obtained by via the following formula:
+            each one of the classifiers is obtained via the following formula:
 
             \begin{equation*}
                 \rho^{PN} =\frac{1}{2}(\rho^{P} + \rho^{N}) = \frac{1}{2}
